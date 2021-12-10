@@ -28,6 +28,20 @@ namespace ApiCatalogo
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            //Configuração CORS - Permissão de acesso externo 
+            //Cross-Origin Resource Sharing (Compartilhamento de recursos com origens diferentes)
+            //é um mecanismo que usa cabeçalhos adicionais HTTP para informar a um navegador que
+            //permita que um aplicativo Web seja executado em uma origem (domínio) com permissão
+            //para acessar recursos selecionados de um servidor em uma origem distinta.
+
+            IServiceCollection serviceCollection = services.AddCors(options => options.AddDefaultPolicy(builder =>
+            {
+                builder.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader();
+            }));
+
+
             //Configuração do serviço para acesso da aplicação ao banco de dados
             services.AddDbContext<AppDbContext>(options =>
             options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
@@ -45,6 +59,9 @@ namespace ApiCatalogo
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+
+                //Use CORS
+                app.UseCors();
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ApiCatalogo v1"));
             }
